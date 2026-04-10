@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200">
+    <meta name="description" content="Cứu Truyện - Quản Lý Nhóm">
+    <title>Cứu Truyện - Quản Lý Nhóm</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body {
+            background-color: var(--primary-bg);
+        }
+
+        .dashboard-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .nav-tabs .nav-link {
+            color: #7a6e67;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #f7a928;
+            border-bottom: 3px solid #f7a928;
+            background-color: transparent;
+        }
+
+        .nav-tabs .nav-link:hover:not(.active) {
+            border-color: #dcd4cc;
+        }
+
+        .table-custom th {
+            background-color: #f8f9fa;
+            color: #5c514b;
+            font-weight: 700;
+            padding: 1rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .table-custom td {
+            vertical-align: middle;
+            color: #4a413b;
+            padding: 1rem;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .btn-action-icon {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            background: transparent;
+        }
+
+        .btn-edit {
+            color: #0d6efd;
+        }
+
+        .btn-edit:hover {
+            background-color: rgba(13, 110, 253, 0.1);
+            border-color: rgba(13, 110, 253, 0.2);
+        }
+
+        .btn-delete {
+            color: #dc3545;
+        }
+
+        .btn-delete:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-color: rgba(220, 53, 69, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="cuutruyen-header sticky-top pt-3 pb-3 shadow-sm">
+        <div class="container-fluid px-5">
+            <div class="row align-items-center">
+                <!-- Navigation Left -->
+                <div class="col-5 d-flex align-items-center gap-4 header-links">
+                    <!-- Genres dropdown removed -->
+                    <a href="#" class="text-decoration-none fw-bold text-dark text-uppercase">Ủng hộ</a>
+                    <a href="#" class="text-decoration-none fw-bold text-dark text-uppercase">Discord</a>
+                    <a href="dang-truyen.html" id="navUploadManga"
+                        class="text-decoration-none fw-bold text-dark d-none text-uppercase">Đăng truyện</a>
+                    <a href="quan-ly-nhom.html" id="navManageGroup"
+                        class="text-decoration-none fw-bold text-dark d-none text-uppercase">Quản lý nhóm</a>
+                    <a href="quan-ly-he-thong.html" id="navSystemAdmin"
+                        class="text-decoration-none fw-bold text-dark d-none text-uppercase">Quản trị</a>
+                </div>
+
+                <!-- Logo Center -->
+                <div class="col-2 text-center">
+                    <a href="index.html"
+                        class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo text-uppercase">
+                        Cứu Truyện
+                    </a>
+                </div>
+
+                <!-- Action Icons Right -->
+                <div class="col-5 d-flex justify-content-end align-items-center gap-3">
+                    <button id="btnSearchToggle" class="btn-circular btn-icon"><i
+                            class="fa-solid fa-magnifying-glass"></i></button>
+
+                    <!-- Guest View -->
+                    <div id="headerGuestView" class="d-flex align-items-center gap-2">
+                        <button class="btn btn-outline-secondary fw-bold rounded-pill px-3" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">Đăng nhập</button>
+                        <button class="btn btn-dark fw-bold rounded-pill px-3" data-bs-toggle="modal"
+                            data-bs-target="#registerModal">Đăng ký</button>
+                    </div>
+
+                    <!-- User View -->
+                    <div id="headerUserView" class="d-none align-items-center gap-3">
+                        <button class="btn-circular btn-icon"><i class="fa-regular fa-bell"></i></button>
+                        <div class="dropdown">
+                            <button class="btn-circular btn-user fw-bold border-0" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <span id="headerAvatarText">U</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3"
+                                style="min-width: 220px;">
+                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-theo-doi.html">Truyện theo
+                                        dõi</a></li>
+                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-da-doc.html">Truyện đã đọc</a>
+                                </li>
+                                <li><a class="dropdown-item py-2 fw-medium" href="vi.html">Ví của tôi</a></li>
+                                <li><a class="dropdown-item py-2 fw-medium d-none" id="menuUploadManga"
+                                        href="dang-truyen.html">Đăng truyện</a></li>
+                                <li><a class="dropdown-item py-2 fw-medium" href="cai-dat.html">Cài đặt</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item py-2 text-danger fw-medium" id="btnLogout" href="#">Đăng
+                                        xuất</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-5">
+        <div class="container mx-auto" style="max-width: 1100px;">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="btn-user bg-dark d-flex align-items-center justify-content-center fw-bold fs-2 text-white me-3 shadow"
+                        style="width: 60px; height: 60px;">N</div>
+                    <div>
+                        <h2 class="fw-bold fs-3 text-dark mb-1">Nhóm Dịch: Night Owl Scan</h2>
+                        <p class="text-secondary mb-0">Quản lý thành viên và truyện của nhóm</p>
+                    </div>
+                </div>
+                <button class="btn btn-dark fw-bold px-4 py-2 rounded-3"><i class="fa-solid fa-user-plus me-2"></i> Thêm
+                    thành viên</button>
+            </div>
+
+            <div class="dashboard-card">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs border-bottom" id="groupTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="members-tab" data-bs-toggle="tab" data-bs-target="#members"
+                            type="button" role="tab">Danh sách thành viên (3)</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="mangas-tab" data-bs-toggle="tab" data-bs-target="#mangas"
+                            type="button" role="tab">Truyện đang thầu (12)</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="approval-tab" data-bs-toggle="tab" data-bs-target="#approval"
+                            type="button" role="tab">Duyệt truyện <span
+                                class="badge rounded-pill bg-danger ms-1">2</span></button>
+                    </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content" id="groupTabsContent">
+                    <!-- Tab Members -->
+                    <div class="tab-pane fade show active p-0" id="members" role="tabpanel" tabindex="0">
+                        <div class="table-responsive">
+                            <table class="table table-custom mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%">#</th>
+                                        <th style="width: 35%">Người dùng</th>
+                                        <th style="width: 25%">Vai trò</th>
+                                        <th style="width: 20%">Ngày tham gia</th>
+                                        <th style="width: 15%" class="text-end">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="btn-circular bg-primary text-white"
+                                                    style="width: 32px; height: 32px; font-size: 0.8rem;">A</div>
+                                                <span class="fw-bold fs-6">Admin Cứu</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-danger">Trưởng nhóm</span></td>
+                                        <td>12/01/2026</td>
+                                        <td class="text-end">
+                                            <button class="btn-action-icon btn-edit me-1" title="Sửa"
+                                                data-bs-toggle="modal" data-bs-target="#editMemberModal"><i
+                                                    class="fa-solid fa-pen-to-square"></i></button>
+                                            <button class="btn-action-icon btn-delete" title="Xoá"
+                                                data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"><i
+                                                    class="fa-solid fa-trash-can"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="btn-circular btn-user text-white"
+                                                    style="width: 32px; height: 32px; font-size: 0.8rem;">T</div>
+                                                <span class="fw-bold fs-6">Translator 1</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-success">Dịch giả</span></td>
+                                        <td>15/02/2026</td>
+                                        <td class="text-end">
+                                            <button class="btn-action-icon btn-edit me-1" title="Sửa"
+                                                data-bs-toggle="modal" data-bs-target="#editMemberModal"><i
+                                                    class="fa-solid fa-pen-to-square"></i></button>
+                                            <button class="btn-action-icon btn-delete" title="Xoá"
+                                                data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"><i
+                                                    class="fa-solid fa-trash-can"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="btn-circular text-white"
+                                                    style="background-color: #9b59b6; width: 32px; height: 32px; font-size: 0.8rem;">
+                                                    E</div>
+                                                <span class="fw-bold fs-6">Editor Pro</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-info">Editor</span></td>
+                                        <td>02/04/2026</td>
+                                        <td class="text-end">
+                                            <button class="btn-action-icon btn-edit me-1" title="Sửa"
+                                                data-bs-toggle="modal" data-bs-target="#editMemberModal"><i
+                                                    class="fa-solid fa-pen-to-square"></i></button>
+                                            <button class="btn-action-icon btn-delete" title="Xoá"
+                                                data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"><i
+                                                    class="fa-solid fa-trash-can"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab Mangas -->
+                    <div class="tab-pane fade p-0" id="mangas" role="tabpanel" tabindex="0">
+                        <div class="table-responsive">
+                            <table class="table table-custom mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%">#</th>
+                                        <th style="width: 45%">Truyện</th>
+                                        <th style="width: 15%">Chương Mới</th>
+                                        <th style="width: 20%">Cập nhật lần cuối</th>
+                                        <th style="width: 15%" class="text-end">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mangaGroupTableBody">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">Đang tải dữ liệu...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab Approval -->
+                    <div class="tab-pane fade p-0" id="approval" role="tabpanel" tabindex="0">
+                        <div class="table-responsive">
+                            <table class="table table-custom mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%">#</th>
+                                        <th style="width: 35%">Truyện gửi lên</th>
+                                        <th style="width: 20%">Người gửi</th>
+                                        <th style="width: 15%">Ngày gửi</th>
+                                        <th style="width: 25%" class="text-end">Thao tác duyệt</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>
+                                            <div class="fw-bold text-dark">Thanh Gươm Diệt Quỷ - Special</div>
+                                            <small class="text-muted">Chapter 1-5 (Bản Edit mới)</small>
+                                        </td>
+                                        <td>Translator_X</td>
+                                        <td>Hôm nay</td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-success fw-bold px-3">DUYỆT</button>
+                                            <button class="btn btn-sm btn-outline-danger fw-bold ms-1">TỪ CHỐI</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>
+                                            <div class="fw-bold text-dark">Ma Vương Đi Làm</div>
+                                            <small class="text-muted">Chapter 200 (End)</small>
+                                        </td>
+                                        <td>Translator_Y</td>
+                                        <td>Hôm qua</td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-success fw-bold px-3">DUYỆT</button>
+                                            <button class="btn btn-sm btn-outline-danger fw-bold ms-1">TỪ CHỐI</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals Quản Lý -->
+    <!-- Modal Sửa Thành Viên -->
+    <div class="modal fade" id="editMemberModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold mb-0">Sửa vai trò</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small fw-bold text-uppercase">Chọn chức vụ mới</label>
+                        <select class="form-select border-2">
+                            <option value="1">Trưởng nhóm</option>
+                            <option value="2">Dịch giả</option>
+                            <option value="3">Editor</option>
+                            <option value="4">Uploader</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-dark w-100 py-2 fw-bold rounded-3 mt-2">CẬP NHẬT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sửa Truyện -->
+    <div class="modal fade" id="editMangaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-bottom px-4 py-3">
+                    <h5 class="fw-bold mb-0">Cấu hình thông tin truyện</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-8">
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small fw-bold">TÊN TRUYỆN</label>
+                                <input type="text" class="form-control" value="Ma Vương Đại Nhân Tập Sự">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small fw-bold">TÁC GIẢ</label>
+                                <input type="text" class="form-control" value="Oda Eiichiro">
+                            </div>
+                            <div class="mb-0">
+                                <label class="form-label text-secondary small fw-bold">TÓM TẮT</label>
+                                <textarea class="form-control" rows="4">Mô tả cũ của truyện...</textarea>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label text-secondary small fw-bold">ẢNH BÌA</label>
+                            <div class="border rounded-3 p-2 text-center bg-light">
+                                <img src="https://placehold.co/150x210/e0e0e0/616161?text=Cover"
+                                    class="img-fluid rounded border mb-2">
+                                <button class="btn btn-sm btn-outline-secondary w-100">Thay ảnh</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top px-4 py-3">
+                    <button type="button" class="btn btn-light fw-bold px-4" data-bs-dismiss="modal">HỦY BỎ</button>
+                    <button type="button" class="btn btn-dark fw-bold px-4">LƯU THAY ĐỔI</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Xác nhận Xoá -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-body p-4 text-center">
+                    <i class="fa-solid fa-triangle-exclamation text-danger display-4 mb-3"></i>
+                    <h5 class="fw-bold mb-2">Bạn có chắc chắn?</h5>
+                    <p class="text-secondary small mb-4">Hành động này không thể hoàn tác. Dữ liệu sẽ bị xóa vĩnh viễn
+                        khỏi nhóm.</p>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light flex-fill fw-bold py-2"
+                            data-bs-dismiss="modal">KHÔNG</button>
+                        <button type="button" class="btn btn-danger flex-fill fw-bold py-2">XÁC NHẬN XOÁ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Overlay -->
+    <div id="searchOverlay" class="search-overlay d-none">
+        <div class="search-overlay-content container mx-auto" style="max-width: 800px; padding-top: 100px;">
+            <div class="position-relative">
+                <input type="text" id="liveSearchInput"
+                    class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm"
+                    style="font-size: 1.15rem; border: 2px solid #a2bdf8;" placeholder="Tìm kiếm...">
+                <div class="d-flex justify-content-end mt-2">
+                    <a href="search.html" class="text-secondary fw-bold text-decoration-none"
+                        style="font-size: 0.85rem;">Tìm kiếm nâng cao</a>
+                </div>
+            </div>
+            <div id="searchResults"
+                class="search-results-dropdown bg-white rounded-3 shadow-lg mt-3 overflow-hidden d-none">
+                <div class="list-group list-group-flush" id="searchResultList"></div>
+                <div class="bg-light p-3 border-top pb-2">
+                    <a href="search.html" class="text-secondary text-decoration-none fw-bold"
+                        style="font-size: 0.85rem;" id="searchAllText">Tìm tất cả kết quả cho từ khóa</a>
+                </div>
+            </div>
+        </div>
+        <button id="closeSearchBtn" class="btn text-secondary position-absolute top-0 end-0 m-4 fs-2 border-0"><i
+                class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const tableBody = document.getElementById('mangaGroupTableBody');
+            if (tableBody) {
+                try {
+                    const mangas = await ApiService.getMangas();
+                    if (mangas && mangas.length > 0) {
+                        tableBody.innerHTML = mangas.map((m, idx) => `
+                            <tr>
+                                <td>${idx + 1}</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="${getImageUrl(m.coverUrl) || 'https://placehold.co/40x56/e0e0e0/616161?text=img'}" width="40" height="56" alt="cover" class="rounded border object-fit-cover">
+                                        <a href="chi-tiet-truyen.html?id=${m.seriesId}" class="fw-bold text-dark text-decoration-none">${m.title}</a>
+                                    </div>
+                                </td>
+                                <td>Chương ${m.totalChapter || '?'}</td>
+                                <td>Vài giây trước</td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end align-items-center gap-2">
+                                        <button class="btn btn-sm btn-dark fw-bold px-3">Đăng Chap</button>
+                                        <button class="btn-action-icon btn-edit" title="Sửa truyện"><i class="fa-solid fa-gear"></i></button>
+                                        <button class="btn-action-icon btn-delete" title="Gỡ truyện"><i class="fa-solid fa-circle-xmark"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Chưa có truyện nào trong nhóm</td></tr>';
+                    }
+                } catch (error) {
+                    console.error("Failed to load generic mangas", error);
+                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Lỗi khi tải dữ liệu!</td></tr>';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
